@@ -1,5 +1,7 @@
 import 'dart:ffi';
 
+import 'package:money_management/Constants.dart';
+import 'package:money_management/DB/DB_Models/DB_CategoryModel.dart';
 import 'package:money_management/DB/DB_Models/DB_RecordModel.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -73,21 +75,49 @@ class DB_Record {
     return result.map((json) => DB_RecordDBModel.fromJson(json)).toList();
   }
 
-  Future<List<DB_RecordFilterModel>> getFilteredTotalRecord() async {
+  Future<List<DB_RecordFilterModel>> getFilteredTotalRecord(String sort) async {
     final db = await instance.database;
 
     //custom query
-    final result = await db.rawQuery('SELECT Count(*) as NumberOfRecords, Day, Month, Year FROM $recordTableName '
-        'GROUP BY Day, Month, Year');
+    List<Map<String, Object?>> result = [];
+
+    if (sort == Constants.sortDay) {
+      result = await db.rawQuery('SELECT Count(*) as NumberOfRecords, Day, Month, Year FROM $recordTableName '
+          'GROUP BY Day, Month, Year');
+    } else if (sort == Constants.sortMonth) {
+      result = await db.rawQuery('SELECT Count(*) as NumberOfRecords, Day, Month, Year FROM $recordTableName '
+          'GROUP BY Month, Year');
+    } else if (sort == Constants.sortYear) {
+      result = await db.rawQuery('SELECT Count(*) as NumberOfRecords, Day, Month, Year FROM $recordTableName '
+          'GROUP BY Year');
+    }
+
+    /*final result = await db.rawQuery('SELECT Count(*) as NumberOfRecords, Day, Month, Year FROM $recordTableName '
+        'GROUP BY Day, Month, Year');*/
 
     return result.map((json) => DB_RecordFilterModel.fromJson(json)).toList();
   }
 
-  Future<List<DB_RecordDBModel>> getFilteredRecordsList(int day) async {
+  Future<List<DB_RecordDBModel>> getFilteredRecordsList(String sortBy, int day, int month, int year) async {
     final db = await instance.database;
 
     //custom query
-    final result = await db.rawQuery('SELECT * FROM $recordTableName WHERE Day = $day');
+    //final result = await db.rawQuery('SELECT * FROM $recordTableName WHERE Day = $day');
+
+    List<Map<String, Object?>> result = [];
+
+    if (sortBy == Constants.sortDay) {
+      result = await db.rawQuery('SELECT * FROM $recordTableName '
+          'INNER JOIN $categoryTableName ON $recordTableName.Category = $categoryTableName.CategoryName '
+          'WHERE Day = $day AND Month = $month AND Year = $year'
+      );
+    }
+    else if (sortBy == Constants.sortMonth) {
+      result = await db.rawQuery('SELECT * FROM $recordTableName WHERE Month = $month AND Year = $year');
+    }
+    else if (sortBy == Constants.sortYear) {
+      result = await db.rawQuery('SELECT * FROM $recordTableName WHERE Year = $year');
+    }
 
     //final result = await db.query(recordTableName);
 

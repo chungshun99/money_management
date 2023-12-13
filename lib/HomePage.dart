@@ -33,6 +33,8 @@ class _HomePageState extends State<HomePage> {
 
   late Map<String, double> dataMap;
 
+  String sortBy = Constants.sortDay;
+
  /* Map<String, double> dataMap = {
     "Flutter": 5,
     "React": 4,
@@ -71,8 +73,8 @@ class _HomePageState extends State<HomePage> {
     return testRecordsList;
   }
 
-  Future<List<DB_RecordFilterModel>> loadRecords2() async {
-    var testRecords = await DB_Record.instance.getFilteredTotalRecord();
+  Future<List<DB_RecordFilterModel>> loadRecords2(String sort) async {
+    var testRecords = await DB_Record.instance.getFilteredTotalRecord(sort);
 
     List<DB_RecordFilterModel> testRecordsList = [];
 
@@ -90,8 +92,8 @@ class _HomePageState extends State<HomePage> {
     return testRecordsList;
   }
 
-  Future<List<DB_RecordDBModel>> loadRecords3(int day) async {
-    var testRecords = await DB_Record.instance.getFilteredRecordsList(day);
+  Future<List<DB_RecordDBModel>> loadRecords3(int day, int month, int year) async {
+    var testRecords = await DB_Record.instance.getFilteredRecordsList(sortBy, day, month, year);
 
     List<DB_RecordDBModel> testRecordsList = [];
 
@@ -131,6 +133,43 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text("Money Manager"),
         backgroundColor: Colors.blue[200],
+        actions: [
+          PopupMenuButton(
+              icon: Icon(Icons.sort),
+              itemBuilder: (context){
+                return [
+                  const PopupMenuItem<String>(
+                    value: Constants.sortDay,
+                    child: Text(Constants.sortDay),
+                  ),
+                  const PopupMenuItem<String>(
+                    value: Constants.sortMonth,
+                    child: Text(Constants.sortMonth),
+                  ),
+                  const PopupMenuItem<String>(
+                    value: Constants.sortYear,
+                    child: Text(Constants.sortYear),
+                  ),
+                ];
+              },
+              onSelected:(value){
+                if(value == Constants.sortDay) {
+                  setState(() {
+                    sortBy = Constants.sortDay;
+                  });
+                } else if(value == Constants.sortMonth) {
+                  setState(() {
+                    sortBy = Constants.sortMonth;
+                  });
+                } else if(value == Constants.sortYear) {
+                  setState(() {
+                    sortBy = Constants.sortYear;
+                  });
+                }
+
+              }
+          ),
+        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -157,7 +196,7 @@ class _HomePageState extends State<HomePage> {
             flex: 2,
               child: Container(
                 height: 30,
-                color: Colors.green,
+                //color: Colors.green,
                 //Future Builder
                 child: _futureBuilder(),
                 /*child: ListView.builder(
@@ -233,7 +272,8 @@ class _HomePageState extends State<HomePage> {
 
   Widget _futureBuilder(){
     return FutureBuilder(
-      future: loadRecords2(),
+      future: loadRecords2(sortBy),
+      //future: loadRecords(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         //print("SNAPSHOT DATA:: " + snapshot.data);
         if(snapshot.hasData){
@@ -255,13 +295,14 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _futureBuilder2(int day){
+  Widget _futureBuilder2(int day, int month, int year){
     return FutureBuilder(
-      future: loadRecords3(day),
+      future: loadRecords3(day, month, year),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         //print("SNAPSHOT DATA:: " + snapshot.data);
         if(snapshot.hasData){
-          return createListView(context, snapshot);
+          return createExpandableTile(context, snapshot);
+          //return createListView(context, snapshot);
           //return createPageView(context, snapshot);
         } else {
           return const Center(
@@ -296,9 +337,9 @@ class _HomePageState extends State<HomePage> {
 
         return Container(
           height: 30,
-          color: Colors.green,
+          //color: Colors.green,
           //Future Builder
-          child: _futureBuilder2(day),
+          child: _futureBuilder2(day, month, year),
         );
 
 
@@ -474,10 +515,50 @@ class _HomePageState extends State<HomePage> {
     );
   }*/
 
+
+  Widget createExpandableTile(BuildContext context, AsyncSnapshot snapshot){
+    List<DB_RecordDBModel> values = snapshot.data;
+
+    //to get all the categories in the record
+    List<String> categories = values.map((records) => records.category).toList();
+
+    //to remove duplicated values
+    categories = categories.toSet().toList();
+
+    return ListView.builder(
+      itemCount: categories.length,
+      itemBuilder: (BuildContext context, int index) {
+        //var expense = expenses[index];
+        String category = categories[index];
+
+        return ExpansionTile(
+          title: Text(category, style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),),
+          children: [
+              createListView(context, snapshot)
+            /*SizedBox(
+              height: 400,
+              child: createListView(context, snapshot),
+            )*/
+          ],
+          /*children: <Widget>[
+            Column(
+              children: createListView(context, snapshot),
+            ),
+          ],*/
+        );
+      },
+    );
+  }
+
+
   Widget createListView(BuildContext context, AsyncSnapshot snapshot){
     List<DB_RecordDBModel> values = snapshot.data;
 
+    final List<String> categories = values.map((records) => records.category).toList();
+
     return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
       itemCount: values.length,
       itemBuilder: (BuildContext context, int index) {
         //var expense = expenses[index];
@@ -588,6 +669,19 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  sortingRecords(String sort) {
+    if(sort == Constants.sortDay){
+      setState(() {
+
+      });
+      sortBy = Constants.sortDay;
+      print("My account menu is selected.");
+    }else if(sort == Constants.sortMonth){
+      print("Settings menu is selected.");
+    }else if(sort == Constants.sortYear){
+      print("Logout menu is selected.");
+    }
+  }
 
 
   addExpense() async {

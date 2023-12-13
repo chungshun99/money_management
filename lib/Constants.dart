@@ -8,6 +8,13 @@ class Constants {
   static const String actionCreate = "Create New";
   static const String actionUpdate = "Update";
 
+
+  //Sorting
+  static const String sortDay = "Day";
+  static const String sortMonth = "Month";
+  static const String sortYear = "Year";
+
+
   //List of Icons
   static const Map<String, IconData>  icons = {
     "emergency_outlined": Icons.emergency_outlined,
