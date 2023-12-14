@@ -46,7 +46,7 @@ class DB_Record {
     CREATE TABLE $recordTableName (
     ${DB_RecordDBField.id} $idType,
     ${DB_RecordDBField.Name} $textNullType,
-    ${DB_RecordDBField.Category} $textNotNullType,
+    ${DB_RecordDBField.CategoryID} $textNotNullType,
     ${DB_RecordDBField.Amount} $realType,
     ${DB_RecordDBField.Day} $intNotNullType,
     ${DB_RecordDBField.Month} $intNotNullType,
@@ -54,6 +54,27 @@ class DB_Record {
     ${DB_RecordDBField.Type} $textNotNullType
     )
     ''');
+
+    await db.execute('''
+    CREATE TABLE $categoryTableName (
+    ${DB_CategoryField.id} $idType,
+    ${DB_CategoryField.CategoryName} $textNotNullType,
+    ${DB_CategoryField.CategoryIcon} $textNotNullType,
+    ${DB_CategoryField.CatergoryType} $textNotNullType
+    )
+    ''');
+
+    await _createDefaultCategories(db);
+
+  }
+
+  Future<void> _createDefaultCategories(Database database) async {
+    List<DB_CategoryModel> defaultCategories = Constants.defaultCategories;
+
+    for(var category in defaultCategories) {
+      await database.insert('Category', category.toJson());
+    }
+
   }
 
   Future<DB_RecordDBModel> create(DB_RecordDBModel recordModel) async {
@@ -123,6 +144,8 @@ class DB_Record {
 
     return result.map((json) => DB_RecordDBModel.fromJson(json)).toList();
   }
+
+
 
   // update expense
   Future<int> updateRecord(int id, String name, String category, double amount, int day, int month, int year) async {

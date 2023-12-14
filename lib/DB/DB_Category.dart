@@ -157,6 +157,18 @@ class DB_Category {
     return result.map((json) => DB_CategoryModel.fromJson(json)).toList();
   }
 
+  /*Future<String> getCategoryBasedOnId(int categoryId) async {
+    final db = await instance.database;
+
+    List<Map> results = await db.query(categoryTableName, columns: Story.columns, where: "id = ?", whereArgs: [storyId]);
+
+    Story story = Story.fromMap(results[0]);
+    story.user = await fetchUser(story.user_id);
+
+    return story;
+  }*/
+
+
   Future<int> updateCategory(int id, String categoryName, String categoryIcon, String categoryType) async {
     final db = await instance.database;
 

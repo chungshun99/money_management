@@ -4,7 +4,7 @@ class DB_RecordDBField {
 
   static final String id = "_id";
   static final String Name = "Name";
-  static final String Category = "Category";
+  static final String CategoryID = "CategoryID";
   static final String Amount = "Amount";
   //static final String Date = "Date";
   static final String Day = "Day";
@@ -85,7 +85,7 @@ class DB_RecordDBModel {
   static DB_RecordDBModel fromJson(Map<String, Object?> json) => DB_RecordDBModel(
     id: json[DB_RecordDBField.id] as int?,
     name: json[DB_RecordDBField.Name] as String?,
-    category: json[DB_RecordDBField.Category] as String,
+    category: json[DB_RecordDBField.CategoryID] as String,
     amount: json[DB_RecordDBField.Amount] as double,
     day: json[DB_RecordDBField.Day] as int,
     month: json[DB_RecordDBField.Month] as int,
@@ -96,7 +96,7 @@ class DB_RecordDBModel {
   Map<String, Object?> toJson() => {
     DB_RecordDBField.id : id,
     DB_RecordDBField.Name : name,
-    DB_RecordDBField.Category: category,
+    DB_RecordDBField.CategoryID: category,
     DB_RecordDBField.Amount : amount,
     DB_RecordDBField.Day : day,
     DB_RecordDBField.Month : month,
