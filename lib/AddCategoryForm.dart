@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money_management/Constants.dart';
 import 'package:money_management/DB/DB_Category.dart';
 import 'package:money_management/DB/DB_Models/DB_CategoryModel.dart';
+import 'package:money_management/DB/DatabaseHelper.dart';
 import 'package:money_management/ErrorDialog.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -192,7 +193,7 @@ class _AddCategoryFormState extends State<AddCategoryForm> {
 
     print("Data: " + categoryModel.categoryType);
     try {
-      await DB_Category.instance.create(categoryModel);
+      await DatabaseHelper.instance.createCategory(categoryModel);
       Navigator.pop(context);
     }
     catch(e) {
@@ -210,7 +211,7 @@ class _AddCategoryFormState extends State<AddCategoryForm> {
     String categoryIcon = _selectedIcon;
 
     try {
-      await DB_Category.instance.updateCategory(id!, categoryName, categoryIcon, categoryType);
+      await DatabaseHelper.instance.updateCategory(id!, categoryName, categoryIcon, categoryType);
       Navigator.pop(context);
     }
     catch(e) {

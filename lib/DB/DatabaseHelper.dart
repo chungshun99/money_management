@@ -52,7 +52,7 @@ class DatabaseHelper {
     CREATE TABLE $recordTableName (
     ${DB_RecordField.id} $idType,
     ${DB_RecordField.Name} $textNullType,
-    ${DB_RecordField.CategoryID} $textNotNullType,
+    ${DB_RecordField.CategoryID} $intNotNullType,
     ${DB_RecordField.Amount} $realType,
     ${DB_RecordField.Day} $intNotNullType,
     ${DB_RecordField.Month} $intNotNullType,
@@ -160,11 +160,11 @@ class DatabaseHelper {
   }
 
   // update record
-  Future<int> updateRecord(int id, String name, String category, double amount, int day, int month, int year) async {
+  Future<int> updateRecord(int id, String name, int categoryID, double amount, int day, int month, int year) async {
     final db = await instance.database;
 
     return db.rawUpdate(
-        'UPDATE $recordTableName SET Name = "$name", Category = "$category", Amount = $amount, Day = $day, Month = $month, Year = $year '
+        'UPDATE $recordTableName SET Name = "$name", CategoryID = $categoryID, Amount = $amount, Day = $day, Month = $month, Year = $year '
             'WHERE _id = $id'
     );
 

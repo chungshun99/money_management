@@ -6,6 +6,7 @@ import 'package:money_management/Class/Category.dart';
 import 'package:money_management/Constants.dart';
 import 'package:money_management/DB/DB_Category.dart';
 import 'package:money_management/DB/DB_Models/DB_CategoryModel.dart';
+import 'package:money_management/DB/DatabaseHelper.dart';
 import 'package:money_management/ErrorDialog.dart';
 import 'package:money_management/ProgressDialog.dart';
 
@@ -253,7 +254,7 @@ class _CategoryPageState extends State<CategoryPage> {
     //showProgressDialog(context);
 
     categoryList = [];
-    this.categoryListTemp = await DB_Category.instance.readAllData();
+    this.categoryListTemp = await DatabaseHelper.instance.readAllCategory();
 
     if (categoryListTemp.isEmpty) {
       this.categoryListTemp = [];
@@ -337,7 +338,7 @@ class _CategoryPageState extends State<CategoryPage> {
 
   Future<void> deleteCategory(int id, String categoryName, String categoryType) async {
     try {
-      await DB_Category.instance.delete(id, categoryName, categoryType);
+      await DatabaseHelper.instance.deleteCategory(id, categoryName, categoryType);
       await loadCategory();
 
     }

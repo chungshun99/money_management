@@ -312,7 +312,7 @@ class _NewExpensePageState extends State<NewExpensePage> {
     print("Data: " + expenseModel.type);
 
     try {
-      await DB_Record.instance.create(expenseModel);
+      await DatabaseHelper.instance.createRecord(expenseModel);
 
       //dismiss progress dialog
       Navigator.pop(context);

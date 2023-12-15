@@ -4,10 +4,10 @@ final String recordTableName = "Record";
 
 class DB_RecordField {
 
-  static final String id = "_id";
+  static final String RecordID = "RecordID";
   static final String Name = "Name";
   static final String CategoryID = "CategoryID";
-  static final String CategoryName = "CategoryID";
+  static final String CategoryName = "CategoryName";
   static final String Amount = "Amount";
   //static final String Date = "Date";
   static final String Day = "Day";
@@ -19,7 +19,7 @@ class DB_RecordField {
 }
 
 class RecordModel {
-  final int? id;
+  final int? recordID;
   final String? name;
   final int categoryID;
   final String? categoryName;
@@ -32,7 +32,7 @@ class RecordModel {
   final String type;
 
   RecordModel({
-    this.id,
+    this.recordID,
     this.name,
     required this.categoryID,
     this.categoryName,
@@ -46,7 +46,7 @@ class RecordModel {
   });
 
   RecordModel copy({
-    int? id,
+    int? RecordID,
     String? Name,
     int? CategoryID,
     double? Amount,
@@ -57,7 +57,7 @@ class RecordModel {
     String? Type,
   }) =>
       RecordModel(
-        id: id ?? this.id,
+        recordID: RecordID ?? this.recordID,
         name: Name ?? this.name,
         categoryID: CategoryID ?? this.categoryID,
         amount: Amount ?? this.amount,
@@ -95,14 +95,14 @@ class RecordModel {
     id: json[DB_RecordField.id] as int?,
     name: json[DB_RecordField.Name] as String?,
     categoryID: json[DB_RecordField.CategoryID] as int,
-    categoryName: json[DB_RecordField.CategoryName] as String?,
-    categoryIcon: json[DB_CategoryField.CategoryIcon] as String?,
-    categoryType: json[DB_CategoryField.CatergoryType] as String?,
     amount: json[DB_RecordField.Amount] as double,
     day: json[DB_RecordField.Day] as int,
     month: json[DB_RecordField.Month] as int,
     year: json[DB_RecordField.Year] as int,
     type: json[DB_RecordField.Type] as String,
+    categoryName: json[DB_RecordField.CategoryName] as String?,
+    categoryIcon: json[DB_CategoryField.CategoryIcon] as String?,
+    categoryType: json[DB_CategoryField.CatergoryType] as String?,
   );
 
   Map<String, Object?> toJson() => {

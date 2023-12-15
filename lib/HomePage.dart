@@ -103,6 +103,9 @@ class _HomePageState extends State<HomePage> {
           id: records.id,
           name: records.name,
           categoryID: records.categoryID,
+          categoryName: records.categoryName,
+          categoryIcon: records.categoryIcon,
+          categoryType: records.categoryType,
           amount: records.amount,
           day: records.day,
           month: records.month,
@@ -194,7 +197,7 @@ class _HomePageState extends State<HomePage> {
           ),*/
           //List View
           Expanded(
-            flex: 2,
+            flex: 3,
               child: Container(
                 height: 30,
                 //color: Colors.green,
@@ -217,7 +220,7 @@ class _HomePageState extends State<HomePage> {
               child: Container(
                 height: 200,
                 color: Colors.yellow,
-                padding: EdgeInsets.all(12),
+                padding: EdgeInsets.all(20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -229,12 +232,12 @@ class _HomePageState extends State<HomePage> {
                           shape: BoxShape.circle,
                           border: Border.all(
                               color: Colors.red,
-                              width: 10
+                              width: 3
                           )
                       ),
                       child: IconButton(
                         icon: Icon(FeatherIcons.minus),
-                        iconSize: 60,
+                        iconSize: 50,
                         color: Colors.red,
                         //child: Text("-", style: TextStyle(color: Colors.red, fontSize: 60),),
                         //onPressed: () => {debugPrint('Deduct')},
@@ -251,11 +254,11 @@ class _HomePageState extends State<HomePage> {
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: Colors.green,
-                            width: 10,
+                            width: 3,
                           )
                       ),
                       child: TextButton(
-                        child: Text("+", style: TextStyle(color: Colors.green, fontSize: 60),),
+                        child: Text("+", style: TextStyle(color: Colors.green, fontSize: 50),),
                         onPressed: () {
                           newExpenseScreen(Constants.incomeType);
                         },
@@ -533,9 +536,9 @@ class _HomePageState extends State<HomePage> {
         String category = categories[index];
 
         return ExpansionTile(
-          title: Text(category, style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),),
+          title: Text(category, style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),),
           children: [
-              createListView(context, snapshot)
+              createListView(context, snapshot, category)
             /*SizedBox(
               height: 400,
               child: createListView(context, snapshot),
@@ -552,7 +555,7 @@ class _HomePageState extends State<HomePage> {
   }
 
 
-  Widget createListView(BuildContext context, AsyncSnapshot snapshot){
+  Widget createListView(BuildContext context, AsyncSnapshot snapshot, String categoryHeader){
     List<RecordModel> values = snapshot.data;
 
     return ListView.builder(
@@ -564,53 +567,59 @@ class _HomePageState extends State<HomePage> {
         var expense = snapshot.data[index];
         int id = expense.id!;
         String? expenseName = expense.name;
-        String category = expense.category;
+        String category = expense.categoryName;
         double amount = expense.amount;
 
-        return Container(
-            child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child:
-                    Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Expanded(
-                              flex: 1,
-                              child: Padding(
-                                padding: const EdgeInsets.only(left:6, right: 6, top:6, bottom: 6),
-                                child:Text(expenseName!,
-                                    textAlign: TextAlign.start,
-                                    style: const TextStyle(color: Colors.black, fontSize: 10)),
-                              )),
-                          // edit button
-                          IconButton(
-                            icon:  Icon(Icons.edit_outlined),
-                            iconSize: 10,
-                            color: Colors.blue,
-                            onPressed: () {
-                              // edit
-                              updateRecordScreen(expense);
-                            },
-                          ),
-                          // delete button
-                          IconButton(
-                            icon:  Icon(Icons.delete_outline),
-                            iconSize: 10,
-                            color: Colors.red,
-                            onPressed: () {
-                              // delete item
-                              deleteRecord(id);
-                            },
-                          ),
-                        ]),
-                  ),
+        if (category == categoryHeader) {
+          return Container(
+              child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child:
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                                flex: 1,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left:6, right: 6, top:6, bottom: 6),
+                                  child:Text(expenseName!,
+                                      textAlign: TextAlign.start,
+                                      style: const TextStyle(color: Colors.black, fontSize: 15)),
+                                )),
+                            // edit button
+                            IconButton(
+                              icon:  Icon(Icons.edit_outlined),
+                              iconSize: 20,
+                              color: Colors.blue,
+                              onPressed: () {
+                                // edit
+                                updateRecordScreen(expense);
+                              },
+                            ),
+                            // delete button
+                            IconButton(
+                              icon:  Icon(Icons.delete_outline),
+                              iconSize: 20,
+                              color: Colors.red,
+                              onPressed: () {
+                                // delete item
+                                deleteRecord(id);
+                              },
+                            ),
+                          ]),
+                    ),
 
-                ]
-            )
-        );
+                  ]
+              )
+          );
+        }
+        else {
+          return Container();
+        }
+
       },
     );
   }
@@ -696,7 +705,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> deleteRecord(int id) async {
     try {
-      await DB_Record.instance.delete(id);
+      await DatabaseHelper.instance.deleteRecord(id);
 
       //using setState to force refresh the widgets
       setState(() { });

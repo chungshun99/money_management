@@ -82,7 +82,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
                   )).toList(),*/
                   value: _selectedCategory,
                   items: categoryList.map((e) => DropdownMenuItem(
-                    value: e.categoryName,
+                    value: e.id.toString(),
                     child: Row(
                       children: [
                         SizedBox(
@@ -305,7 +305,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
     int id = widget.recordModel.id!;
     String name = nameController.text;
     double amount = double.parse(amountController.text);
-    String category = _selectedCategory;
+    int categoryID = int.parse(_selectedCategory);
 
     String date = dateController.text;
     List<int> splitedDate = date.split('/').map((date) => int.parse(date)).toList();
@@ -314,7 +314,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
     int year = splitedDate[2];
 
     try {
-      await DB_Record.instance.updateRecord(id, name, category, amount, day, month, year);
+      await DatabaseHelper.instance.updateRecord(id, name, categoryID, amount, day, month, year);
 
       //dismiss progress dialog
       Navigator.pop(context);
