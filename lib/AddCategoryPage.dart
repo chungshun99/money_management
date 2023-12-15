@@ -110,7 +110,7 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
     String name = nameController.text;
     String categoryType = _selectedCategoryType;
 
-    DB_CategoryModel categoryModel = new DB_CategoryModel(
+    CategoryModel categoryModel = new CategoryModel(
         categoryName: name,
         categoryType: categoryType,
         categoryIcon: "Icon 1"

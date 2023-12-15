@@ -10,7 +10,7 @@ class AddCategoryForm extends StatefulWidget {
 
   AddCategoryForm({Key? key, required this.action, this.categoryModel}) : super(key: key);
   String action;
-  DB_CategoryModel? categoryModel;
+  CategoryModel? categoryModel;
 
   @override
   State<AddCategoryForm> createState() => _AddCategoryFormState();
@@ -184,7 +184,7 @@ class _AddCategoryFormState extends State<AddCategoryForm> {
     IconData firstIcon = iconList.values.toList().first;
     //print("Selected Icon:: " + firstIcon.toString());
 
-    DB_CategoryModel categoryModel = new DB_CategoryModel(
+    CategoryModel categoryModel = new CategoryModel(
         categoryName: categoryName,
         categoryType: categoryType,
         categoryIcon: categoryIcon

@@ -23,6 +23,12 @@ class DatabaseHelper {
     return _database!;
   }
 
+  /*
+  **************************
+  //Table Creation Functions
+  **************************
+  */
+
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
@@ -44,14 +50,14 @@ class DatabaseHelper {
 
     await db.execute('''
     CREATE TABLE $recordTableName (
-    ${DB_RecordDBField.id} $idType,
-    ${DB_RecordDBField.Name} $textNullType,
-    ${DB_RecordDBField.CategoryID} $textNotNullType,
-    ${DB_RecordDBField.Amount} $realType,
-    ${DB_RecordDBField.Day} $intNotNullType,
-    ${DB_RecordDBField.Month} $intNotNullType,
-    ${DB_RecordDBField.Year} $intNotNullType,
-    ${DB_RecordDBField.Type} $textNotNullType
+    ${DB_RecordField.id} $idType,
+    ${DB_RecordField.Name} $textNullType,
+    ${DB_RecordField.CategoryID} $textNotNullType,
+    ${DB_RecordField.Amount} $realType,
+    ${DB_RecordField.Day} $intNotNullType,
+    ${DB_RecordField.Month} $intNotNullType,
+    ${DB_RecordField.Year} $intNotNullType,
+    ${DB_RecordField.Type} $textNotNullType
     )
     ''');
 
@@ -64,9 +70,28 @@ class DatabaseHelper {
     )
     ''');
 
+    await _createDefaultCategories(db);
+
   }
 
-  Future<DB_RecordDBModel> create(DB_RecordDBModel recordModel) async {
+  //only run on first time, to add the default categories
+  Future<void> _createDefaultCategories(Database database) async {
+    List<CategoryModel> defaultCategories = Constants.defaultCategories;
+
+    for(var category in defaultCategories) {
+      await database.insert('Category', category.toJson());
+    }
+
+  }
+
+
+  /*
+  **************************
+  //Record Table Functions
+  **************************
+  */
+
+  Future<RecordModel> createRecord(RecordModel recordModel) async {
     final db = await instance.database;
 
     final id = await db.insert(recordTableName, recordModel.toJson());
@@ -74,7 +99,7 @@ class DatabaseHelper {
 
   }
 
-  Future<List<DB_RecordDBModel>> readAllData() async {
+  Future<List<RecordModel>> readAllRecord() async {
     final db = await instance.database;
 
     //custom query
@@ -82,10 +107,10 @@ class DatabaseHelper {
 
     final result = await db.query(recordTableName);
 
-    return result.map((json) => DB_RecordDBModel.fromJson(json)).toList();
+    return result.map((json) => RecordModel.fromJson(json)).toList();
   }
 
-  Future<List<DB_RecordFilterModel>> getFilteredTotalRecord(String sort) async {
+  Future<List<RecordFilterModel>> getFilteredTotalRecord(String sort) async {
     final db = await instance.database;
 
     //custom query
@@ -105,10 +130,10 @@ class DatabaseHelper {
     /*final result = await db.rawQuery('SELECT Count(*) as NumberOfRecords, Day, Month, Year FROM $recordTableName '
         'GROUP BY Day, Month, Year');*/
 
-    return result.map((json) => DB_RecordFilterModel.fromJson(json)).toList();
+    return result.map((json) => RecordFilterModel.fromJson(json)).toList();
   }
 
-  Future<List<DB_RecordDBModel>> getFilteredRecordsList(String sortBy, int day, int month, int year) async {
+  Future<List<RecordModel>> getFilteredRecordsList(String sortBy, int day, int month, int year) async {
     final db = await instance.database;
 
     //custom query
@@ -118,7 +143,7 @@ class DatabaseHelper {
 
     if (sortBy == Constants.sortDay) {
       result = await db.rawQuery('SELECT * FROM $recordTableName '
-          'INNER JOIN $categoryTableName ON $recordTableName.Category = $categoryTableName.CategoryName '
+          'INNER JOIN $categoryTableName ON $recordTableName.CategoryID = $categoryTableName._id '
           'WHERE Day = $day AND Month = $month AND Year = $year'
       );
     }
@@ -131,12 +156,10 @@ class DatabaseHelper {
 
     //final result = await db.query(recordTableName);
 
-    return result.map((json) => DB_RecordDBModel.fromJson(json)).toList();
+    return result.map((json) => RecordModel.fromJson(json)).toList();
   }
 
-
-
-  // update expense
+  // update record
   Future<int> updateRecord(int id, String name, String category, double amount, int day, int month, int year) async {
     final db = await instance.database;
 
@@ -147,14 +170,79 @@ class DatabaseHelper {
 
   }
 
-
-  Future<int> delete(int id) async {
+  Future<int> deleteRecord(int id) async {
     final db = await instance.database;
 
     return await db.delete(
       recordTableName,
-      where: '${DB_RecordDBField.id} = ?',
+      where: '${DB_RecordField.id} = ?',
       whereArgs: [id],
+    );
+  }
+
+
+  /*
+  **************************
+  //Category Table Functions
+  **************************
+  */
+
+  Future<CategoryModel> createCategory(CategoryModel categoryModel) async {
+    final db = await instance.database;
+
+    final id = await db.insert(categoryTableName, categoryModel.toJson());
+
+    return categoryModel.copy(id: id);
+  }
+
+  Future<List<CategoryModel>> readAllCategory() async {
+    final db = await instance.database;
+
+    final result = await db.query(categoryTableName);
+
+    return result.map((json) => CategoryModel.fromJson(json)).toList();
+  }
+
+  Future<List<CategoryModel>> getCategoryBasedOnType(String categoryType) async {
+    final db = await instance.database;
+
+    final result = await db.query(
+      categoryTableName,
+      where: '${DB_CategoryField.CatergoryType} = ? ',
+      whereArgs: [categoryType],
+    );
+
+    return result.map((json) => CategoryModel.fromJson(json)).toList();
+  }
+
+  /*Future<String> getCategoryBasedOnId(int categoryId) async {
+    final db = await instance.database;
+
+    List<Map> results = await db.query(categoryTableName, columns: Story.columns, where: "id = ?", whereArgs: [storyId]);
+
+    Story story = Story.fromMap(results[0]);
+    story.user = await fetchUser(story.user_id);
+
+    return story;
+  }*/
+
+
+  Future<int> updateCategory(int id, String categoryName, String categoryIcon, String categoryType) async {
+    final db = await instance.database;
+
+    return db.rawUpdate(
+        'UPDATE $categoryTableName SET CategoryName = "$categoryName", CategoryIcon = "$categoryIcon", CategoryType = "$categoryType" '
+            'WHERE _id = $id'
+    );
+  }
+
+  Future<int> deleteCategory(int id, String categoryName, String categoryType) async {
+    final db = await instance.database;
+
+    return await db.delete(
+      categoryTableName,
+      where: '${DB_CategoryField.id} = ? AND ${DB_CategoryField.CategoryName} = ? AND ${DB_CategoryField.CatergoryType} = ? ' ,
+      whereArgs: [id, categoryName, categoryType],
     );
   }
 

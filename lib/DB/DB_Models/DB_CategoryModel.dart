@@ -8,26 +8,26 @@ class DB_CategoryField {
   static final String CatergoryType = 'CategoryType';
 }
 
-class DB_CategoryModel {
+class CategoryModel {
   final int? id;
   final String categoryName;
   final String categoryIcon;
   final String categoryType;
 
-  DB_CategoryModel({
+  CategoryModel({
     this.id,
     required this.categoryName,
     required this.categoryIcon,
     required this.categoryType
   });
 
-  DB_CategoryModel copy({
+  CategoryModel copy({
     int? id,
     String? CategoryName,
     String? CategoryIcon,
     String? CategoryType
   }) =>
-      DB_CategoryModel(
+      CategoryModel(
         id: id ?? this.id,
         categoryName: this.categoryName,
         categoryIcon: this.categoryIcon,
@@ -35,14 +35,14 @@ class DB_CategoryModel {
       );
 
 
-  static DB_CategoryModel fromJson(Map<String, Object?> json) => DB_CategoryModel(
+  static CategoryModel fromJson(Map<String, Object?> json) => CategoryModel(
       id: json[DB_CategoryField.id] as int?,
       categoryName: json[DB_CategoryField.CategoryName] as String,
       categoryIcon: json[DB_CategoryField.CategoryIcon] as String,
       categoryType: json[DB_CategoryField.CatergoryType] as String
   );
 
-  static DB_CategoryModel fromJson2(Map<String, dynamic> json) => DB_CategoryModel(
+  static CategoryModel fromJson2(Map<String, dynamic> json) => CategoryModel(
       id: json[DB_CategoryField.id] as int?,
       categoryName: json[DB_CategoryField.CategoryName] as String,
       categoryIcon: json[DB_CategoryField.CategoryIcon] as String,

@@ -6,10 +6,11 @@ import 'package:money_management/DB/DB_Category.dart';
 import 'package:money_management/DB/DB_Models/DB_CategoryModel.dart';
 import 'package:money_management/DB/DB_Record.dart';
 import 'package:money_management/DB/DB_Models/DB_RecordModel.dart';
+import 'package:money_management/DB/DatabaseHelper.dart';
 import 'package:money_management/ProgressDialog.dart';
 
 class UpdateRecordPage extends StatefulWidget {
-  DB_RecordDBModel recordModel;
+  RecordModel recordModel;
   UpdateRecordPage({Key? key, required this.recordModel}) : super(key: key);
 
   @override
@@ -30,8 +31,8 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
 
   String _selectedCategory = "";
   List<String> categories = ['Category 1', 'Category 2', 'Category 3', 'Category 4'];
-  late List<DB_CategoryModel> categoryListTemp;
-  List<DB_CategoryModel> categoryList = [];
+  late List<CategoryModel> categoryListTemp;
+  List<CategoryModel> categoryList = [];
 
   @override
   void initState() {
@@ -170,7 +171,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
 
     if (widget.recordModel != null) {
       nameController.text = widget.recordModel.name ?? "";
-      _selectedCategory = widget.recordModel.category;
+      _selectedCategory = widget.recordModel.categoryID.toString();
       amountController.text = widget.recordModel.amount.toString();
 
       NumberFormat formatter = new NumberFormat("00");
@@ -188,7 +189,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
     });
 
     //this.categoryListTemp = await DB_Category.instance.readAllData();
-    this.categoryListTemp = await DB_Category.instance.getCategoryBasedOnType(type);
+    this.categoryListTemp = await DatabaseHelper.instance.getCategoryBasedOnType(type);
 
     if (categoryListTemp.isEmpty) {
       this.categoryListTemp = [];
@@ -199,7 +200,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
     }
     else {
       for (var category in categoryListTemp) {
-        DB_CategoryModel categoryModel = new DB_CategoryModel(
+        CategoryModel categoryModel = new CategoryModel(
             id: category.id,
             categoryName: category.categoryName,
             categoryType: category.categoryType,

@@ -10,6 +10,7 @@ import 'package:money_management/DB/DB_Category.dart';
 import 'package:money_management/DB/DB_Models/DB_CategoryModel.dart';
 import 'package:money_management/DB/DB_Record.dart';
 import 'package:money_management/DB/DB_Models/DB_RecordModel.dart';
+import 'package:money_management/DB/DatabaseHelper.dart';
 import 'package:money_management/ErrorDialog.dart';
 import 'package:money_management/NewExpensePage.dart';
 import 'package:money_management/UpdateRecordPage.dart';
@@ -24,12 +25,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  List<DB_RecordDBModel> recordsListTemp = [];
+  List<RecordModel> recordsListTemp = [];
   //late List<DB_RecordDBModel> recordsList;
-  List<DB_RecordDBModel> recordsList = [];
-  late List<DB_CategoryModel> categoryList;
+  List<RecordModel> recordsList = [];
+  late List<CategoryModel> categoryList;
   //List<Expense> expenses = [];
-  List<DB_RecordDBModel> expenses = [];
+  List<RecordModel> expenses = [];
 
   late Map<String, double> dataMap;
 
@@ -50,16 +51,16 @@ class _HomePageState extends State<HomePage> {
 
   }
 
-  Future<List<DB_RecordDBModel>> loadRecords() async {
-    var testRecords = await DB_Record.instance.readAllData();
+  Future<List<RecordModel>> loadRecords() async {
+    var testRecords = await DatabaseHelper.instance.readAllRecord();
 
-    List<DB_RecordDBModel> testRecordsList = [];
+    List<RecordModel> testRecordsList = [];
 
     for(var records in testRecords) {
-      DB_RecordDBModel recordRead = DB_RecordDBModel(
+      RecordModel recordRead = RecordModel(
           id: records.id,
           name: records.name,
-          category: records.category,
+          categoryID: records.categoryID,
           amount: records.amount,
           day: records.day,
           month: records.month,
@@ -73,13 +74,13 @@ class _HomePageState extends State<HomePage> {
     return testRecordsList;
   }
 
-  Future<List<DB_RecordFilterModel>> loadRecords2(String sort) async {
-    var testRecords = await DB_Record.instance.getFilteredTotalRecord(sort);
+  Future<List<RecordFilterModel>> loadRecords2(String sort) async {
+    var testRecords = await DatabaseHelper.instance.getFilteredTotalRecord(sort);
 
-    List<DB_RecordFilterModel> testRecordsList = [];
+    List<RecordFilterModel> testRecordsList = [];
 
     for(var records in testRecords) {
-      DB_RecordFilterModel recordRead = DB_RecordFilterModel(
+      RecordFilterModel recordRead = RecordFilterModel(
           numberOfRecords: records.numberOfRecords,
           day: records.day,
           month: records.month,
@@ -92,16 +93,16 @@ class _HomePageState extends State<HomePage> {
     return testRecordsList;
   }
 
-  Future<List<DB_RecordDBModel>> loadRecords3(int day, int month, int year) async {
-    var testRecords = await DB_Record.instance.getFilteredRecordsList(sortBy, day, month, year);
+  Future<List<RecordModel>> loadRecords3(int day, int month, int year) async {
+    var testRecords = await DatabaseHelper.instance.getFilteredRecordsList(sortBy, day, month, year);
 
-    List<DB_RecordDBModel> testRecordsList = [];
+    List<RecordModel> testRecordsList = [];
 
     for(var records in testRecords) {
-      DB_RecordDBModel recordRead = DB_RecordDBModel(
+      RecordModel recordRead = RecordModel(
           id: records.id,
           name: records.name,
-          category: records.category,
+          categoryID: records.categoryID,
           amount: records.amount,
           day: records.day,
           month: records.month,
@@ -321,7 +322,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget createPageView(BuildContext context, AsyncSnapshot snapshot){
-    List<DB_RecordFilterModel> values = snapshot.data;
+    List<RecordFilterModel> values = snapshot.data;
 
     return PageView.builder(
       itemCount: values.length,
@@ -412,7 +413,7 @@ class _HomePageState extends State<HomePage> {
     //var expense = expenses[index];
     var record = recordsList[index];
     String? recordName = record.name;
-    String recordCategory = record.category;
+    String recordCategory = record.categoryName ?? "";
     double recordAmount = record.amount;
 
     return Container(
@@ -517,10 +518,10 @@ class _HomePageState extends State<HomePage> {
 
 
   Widget createExpandableTile(BuildContext context, AsyncSnapshot snapshot){
-    List<DB_RecordDBModel> values = snapshot.data;
+    List<RecordModel> values = snapshot.data;
 
     //to get all the categories in the record
-    List<String> categories = values.map((records) => records.category).toList();
+    List<String> categories = values.map((records) => records.categoryName ?? "").toList();
 
     //to remove duplicated values
     categories = categories.toSet().toList();
@@ -552,9 +553,7 @@ class _HomePageState extends State<HomePage> {
 
 
   Widget createListView(BuildContext context, AsyncSnapshot snapshot){
-    List<DB_RecordDBModel> values = snapshot.data;
-
-    final List<String> categories = values.map((records) => records.category).toList();
+    List<RecordModel> values = snapshot.data;
 
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
@@ -620,7 +619,7 @@ class _HomePageState extends State<HomePage> {
   Widget _listViewItemBuilder(BuildContext context, int index){
     var expense = expenses[index];
     String? expenseName = expense.name;
-    String category = expense.category;
+    String category = expense.categoryName ?? "";
     double amount = expense.amount;
 
     return Container(
@@ -735,7 +734,7 @@ class _HomePageState extends State<HomePage> {
   }
 
 
-  void updateRecordScreen(DB_RecordDBModel recordModel) {
+  void updateRecordScreen(RecordModel recordModel) {
     Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => UpdateRecordPage(recordModel: recordModel,))

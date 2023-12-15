@@ -53,17 +53,17 @@ class Constants {
 
 
   //default categories
-  static List<DB_CategoryModel> defaultCategories = [
-    DB_CategoryModel(categoryName: "Eating Out", categoryIcon: "restaurant_outlined", categoryType: "Expense"),
-    DB_CategoryModel(categoryName: "Food", categoryIcon: "lunch_dining_outlined", categoryType: "Expense"),
-    DB_CategoryModel(categoryName: "Health", categoryIcon: "emergency_outlined", categoryType: "Expense"),
-    DB_CategoryModel(categoryName: "Transport", categoryIcon: "train_outlined", categoryType: "Expense"),
-    DB_CategoryModel(categoryName: "Car", categoryIcon: "directions_car_outlined", categoryType: "Expense"),
-    DB_CategoryModel(categoryName: "Clothes", categoryIcon: "checkroom_outlined", categoryType: "Expense"),
-    DB_CategoryModel(categoryName: "Bills", categoryIcon: "receipt_long_outlined", categoryType: "Expense"),
-    DB_CategoryModel(categoryName: "Entertainment", categoryIcon: "local_bar_outlined", categoryType: "Expense"),
-    DB_CategoryModel(categoryName: "Salary", categoryIcon: "attach_money_outlined", categoryType: "Income"),
-    DB_CategoryModel(categoryName: "Savings", categoryIcon: "savings_outlined", categoryType: "Income")
+  static List<CategoryModel> defaultCategories = [
+    CategoryModel(categoryName: "Eating Out", categoryIcon: "restaurant_outlined", categoryType: "Expense"),
+    CategoryModel(categoryName: "Food", categoryIcon: "lunch_dining_outlined", categoryType: "Expense"),
+    CategoryModel(categoryName: "Health", categoryIcon: "emergency_outlined", categoryType: "Expense"),
+    CategoryModel(categoryName: "Transport", categoryIcon: "train_outlined", categoryType: "Expense"),
+    CategoryModel(categoryName: "Car", categoryIcon: "directions_car_outlined", categoryType: "Expense"),
+    CategoryModel(categoryName: "Clothes", categoryIcon: "checkroom_outlined", categoryType: "Expense"),
+    CategoryModel(categoryName: "Bills", categoryIcon: "receipt_long_outlined", categoryType: "Expense"),
+    CategoryModel(categoryName: "Entertainment", categoryIcon: "local_bar_outlined", categoryType: "Expense"),
+    CategoryModel(categoryName: "Salary", categoryIcon: "attach_money_outlined", categoryType: "Income"),
+    CategoryModel(categoryName: "Savings", categoryIcon: "savings_outlined", categoryType: "Income")
   ];
 
 }

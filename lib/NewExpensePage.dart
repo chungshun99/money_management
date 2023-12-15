@@ -6,6 +6,7 @@ import 'package:money_management/DB/DB_Category.dart';
 import 'package:money_management/DB/DB_Models/DB_CategoryModel.dart';
 import 'package:money_management/DB/DB_Record.dart';
 import 'package:money_management/DB/DB_Models/DB_RecordModel.dart';
+import 'package:money_management/DB/DatabaseHelper.dart';
 import 'package:money_management/ProgressDialog.dart';
 
 class NewExpensePage extends StatefulWidget {
@@ -30,8 +31,8 @@ class _NewExpensePageState extends State<NewExpensePage> {
 
   String _selectedCategory = "";
   List<String> categories = ['Category 1', 'Category 2', 'Category 3', 'Category 4'];
-  late List<DB_CategoryModel> categoryListTemp;
-  List<DB_CategoryModel> categoryList = [];
+  late List<CategoryModel> categoryListTemp;
+  List<CategoryModel> categoryList = [];
 
   @override
   void initState() {
@@ -80,7 +81,7 @@ class _NewExpensePageState extends State<NewExpensePage> {
                     child: Text(e),
                   )).toList(),*/
                   items: categoryList.map((e) => DropdownMenuItem(
-                    value: e.categoryName,
+                    value: e.id.toString(),
                     child: Row(
                       children: [
                         SizedBox(
@@ -171,7 +172,7 @@ class _NewExpensePageState extends State<NewExpensePage> {
     });
 
     //this.categoryListTemp = await DB_Category.instance.readAllData();
-    this.categoryListTemp = await DB_Category.instance.getCategoryBasedOnType(type);
+    this.categoryListTemp = await DatabaseHelper.instance.getCategoryBasedOnType(type);
 
     if (categoryListTemp.isEmpty) {
       this.categoryListTemp = [];
@@ -182,7 +183,7 @@ class _NewExpensePageState extends State<NewExpensePage> {
     }
     else {
       for (var category in categoryListTemp) {
-        DB_CategoryModel categoryModel = new DB_CategoryModel(
+        CategoryModel categoryModel = new CategoryModel(
             id: category.id,
             categoryName: category.categoryName,
             categoryType: category.categoryType,
@@ -298,9 +299,9 @@ class _NewExpensePageState extends State<NewExpensePage> {
     //String date = getTodayDate(DateTime.now());
     //String type = Constants.expenseType;
 
-    DB_RecordDBModel expenseModel = new DB_RecordDBModel(
+    RecordModel expenseModel = new RecordModel(
         name: name,
-        category: category,
+        categoryID: int.parse(category),
         amount: amount,
         day: splitedDate[0],
         month: splitedDate[1],

@@ -22,8 +22,8 @@ class _CategoryPageState extends State<CategoryPage> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
 
   List<Category> categories = [Category("categoryName", "color", "categoryIcon"), Category("categoryName2", "color2", "categoryIcon2")];
-  late List<DB_CategoryModel> categoryListTemp;
-  List<DB_CategoryModel> categoryList = [];
+  late List<CategoryModel> categoryListTemp;
+  List<CategoryModel> categoryList = [];
 
   @override
   void initState() {
@@ -264,7 +264,7 @@ class _CategoryPageState extends State<CategoryPage> {
     }
     else {
       for (var category in categoryListTemp) {
-        DB_CategoryModel categoryModel = new DB_CategoryModel(
+        CategoryModel categoryModel = new CategoryModel(
             id: category.id,
             categoryName: category.categoryName,
             categoryType: category.categoryType,
@@ -312,7 +312,7 @@ class _CategoryPageState extends State<CategoryPage> {
   }
 
   updateCategoryPage(int id, String categoryName, String categoryType, String categoryIcon) {
-    DB_CategoryModel categoryModel = DB_CategoryModel(
+    CategoryModel categoryModel = CategoryModel(
         id: id,
         categoryName: categoryName,
         categoryIcon: categoryIcon,

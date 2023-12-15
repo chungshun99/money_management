@@ -129,7 +129,7 @@ class DB_Category {
     await database.insert('Category', Category(id: 1).toMap());
   }*/
 
-  Future<DB_CategoryModel> create(DB_CategoryModel categoryModel) async {
+  Future<CategoryModel> create(CategoryModel categoryModel) async {
     final db = await instance.database;
 
     final id = await db.insert(categoryTableName, categoryModel.toJson());
@@ -137,15 +137,15 @@ class DB_Category {
     return categoryModel.copy(id: id);
   }
 
-  Future<List<DB_CategoryModel>> readAllData() async {
+  Future<List<CategoryModel>> readAllData() async {
     final db = await instance.database;
 
     final result = await db.query(categoryTableName);
 
-    return result.map((json) => DB_CategoryModel.fromJson(json)).toList();
+    return result.map((json) => CategoryModel.fromJson(json)).toList();
   }
 
-  Future<List<DB_CategoryModel>> getCategoryBasedOnType(String categoryType) async {
+  Future<List<CategoryModel>> getCategoryBasedOnType(String categoryType) async {
     final db = await instance.database;
 
     final result = await db.query(
@@ -154,7 +154,7 @@ class DB_Category {
       whereArgs: [categoryType],
     );
 
-    return result.map((json) => DB_CategoryModel.fromJson(json)).toList();
+    return result.map((json) => CategoryModel.fromJson(json)).toList();
   }
 
   /*Future<String> getCategoryBasedOnId(int categoryId) async {

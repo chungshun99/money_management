@@ -22,9 +22,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  List<DB_RecordDBModel> recordsListTemp = [];
-  late List<DB_RecordDBModel> recordsList;
-  late List<DB_CategoryModel> categoryList;
+  List<RecordModel> recordsListTemp = [];
+  late List<RecordModel> recordsList;
+  late List<CategoryModel> categoryList;
   List<Expense> expenses = [];
 
   late Map<String, double> dataMap;
@@ -297,7 +297,7 @@ class _HomePageState extends State<HomePage> {
     //var expense = expenses[index];
     var record = recordsList[index];
     String? recordName = record.name;
-    String recordCategory = record.category;
+    String recordCategory = record.categoryID.toString();
     double recordAmount = record.amount;
 
     return Container(
