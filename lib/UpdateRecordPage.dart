@@ -82,7 +82,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
                   )).toList(),*/
                   value: _selectedCategory,
                   items: categoryList.map((e) => DropdownMenuItem(
-                    value: e.id.toString(),
+                    value: e.categoryID.toString(),
                     child: Row(
                       children: [
                         SizedBox(
@@ -201,7 +201,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
     else {
       for (var category in categoryListTemp) {
         CategoryModel categoryModel = new CategoryModel(
-            id: category.id,
+            categoryID: category.categoryID,
             categoryName: category.categoryName,
             categoryType: category.categoryType,
             categoryIcon: category.categoryIcon
@@ -302,7 +302,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
 
     showProgressDialog(context);
 
-    int id = widget.recordModel.id!;
+    int recordID = widget.recordModel.recordID!;
     String name = nameController.text;
     double amount = double.parse(amountController.text);
     int categoryID = int.parse(_selectedCategory);
@@ -314,7 +314,7 @@ class _UpdateRecordPageState extends State<UpdateRecordPage> {
     int year = splitedDate[2];
 
     try {
-      await DatabaseHelper.instance.updateRecord(id, name, categoryID, amount, day, month, year);
+      await DatabaseHelper.instance.updateRecord(recordID, name, categoryID, amount, day, month, year);
 
       //dismiss progress dialog
       Navigator.pop(context);

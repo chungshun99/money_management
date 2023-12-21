@@ -81,7 +81,7 @@ class _NewExpensePageState extends State<NewExpensePage> {
                     child: Text(e),
                   )).toList(),*/
                   items: categoryList.map((e) => DropdownMenuItem(
-                    value: e.id.toString(),
+                    value: e.categoryID.toString(),
                     child: Row(
                       children: [
                         SizedBox(
@@ -184,7 +184,7 @@ class _NewExpensePageState extends State<NewExpensePage> {
     else {
       for (var category in categoryListTemp) {
         CategoryModel categoryModel = new CategoryModel(
-            id: category.id,
+            categoryID: category.categoryID,
             categoryName: category.categoryName,
             categoryType: category.categoryType,
             categoryIcon: category.categoryIcon

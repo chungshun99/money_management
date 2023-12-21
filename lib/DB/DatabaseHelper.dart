@@ -50,7 +50,7 @@ class DatabaseHelper {
 
     await db.execute('''
     CREATE TABLE $recordTableName (
-    ${DB_RecordField.id} $idType,
+    ${DB_RecordField.RecordID} $idType,
     ${DB_RecordField.Name} $textNullType,
     ${DB_RecordField.CategoryID} $intNotNullType,
     ${DB_RecordField.Amount} $realType,
@@ -63,7 +63,7 @@ class DatabaseHelper {
 
     await db.execute('''
     CREATE TABLE $categoryTableName (
-    ${DB_CategoryField.id} $idType,
+    ${DB_CategoryField.CategoryID} $idType,
     ${DB_CategoryField.CategoryName} $textNotNullType,
     ${DB_CategoryField.CategoryIcon} $textNotNullType,
     ${DB_CategoryField.CatergoryType} $textNotNullType
@@ -94,8 +94,8 @@ class DatabaseHelper {
   Future<RecordModel> createRecord(RecordModel recordModel) async {
     final db = await instance.database;
 
-    final id = await db.insert(recordTableName, recordModel.toJson());
-    return recordModel.copy(id: id);
+    final recordID = await db.insert(recordTableName, recordModel.toJson());
+    return recordModel.copy(RecordID: recordID);
 
   }
 
@@ -117,14 +117,17 @@ class DatabaseHelper {
     List<Map<String, Object?>> result = [];
 
     if (sort == Constants.sortDay) {
-      result = await db.rawQuery('SELECT Count(*) as NumberOfRecords, Day, Month, Year FROM $recordTableName '
-          'GROUP BY Day, Month, Year');
+      result = await db.rawQuery('SELECT Count(*) as NumberOfRecords, Day, Month, Year, '
+          'SUM(CASE WHEN Type == "Expense" THEN -Amount WHEN Type == "Income" THEN Amount END) As TotalBalance '
+          'FROM $recordTableName GROUP BY Day, Month, Year');
     } else if (sort == Constants.sortMonth) {
-      result = await db.rawQuery('SELECT Count(*) as NumberOfRecords, Day, Month, Year FROM $recordTableName '
-          'GROUP BY Month, Year');
+      result = await db.rawQuery('SELECT Count(*) as NumberOfRecords, Day, Month, Year, '
+          'SUM(CASE WHEN Type == "Expense" THEN -Amount WHEN Type == "Income" THEN Amount END) As TotalBalance '
+          'FROM $recordTableName GROUP BY Month, Year');
     } else if (sort == Constants.sortYear) {
-      result = await db.rawQuery('SELECT Count(*) as NumberOfRecords, Day, Month, Year FROM $recordTableName '
-          'GROUP BY Year');
+      result = await db.rawQuery('SELECT Count(*) as NumberOfRecords, Day, Month, Year,'
+          'SUM(CASE WHEN Type == "Expense" THEN -Amount WHEN Type == "Income" THEN Amount END) As TotalBalance '
+          'FROM $recordTableName GROUP BY Year');
     }
 
     /*final result = await db.rawQuery('SELECT Count(*) as NumberOfRecords, Day, Month, Year FROM $recordTableName '
@@ -143,15 +146,21 @@ class DatabaseHelper {
 
     if (sortBy == Constants.sortDay) {
       result = await db.rawQuery('SELECT * FROM $recordTableName '
-          'INNER JOIN $categoryTableName ON $recordTableName.CategoryID = $categoryTableName._id '
+          'INNER JOIN $categoryTableName ON $recordTableName.CategoryID = $categoryTableName.CategoryID '
           'WHERE Day = $day AND Month = $month AND Year = $year'
       );
     }
     else if (sortBy == Constants.sortMonth) {
-      result = await db.rawQuery('SELECT * FROM $recordTableName WHERE Month = $month AND Year = $year');
+      result = await db.rawQuery('SELECT * FROM $recordTableName '
+          'INNER JOIN $categoryTableName ON $recordTableName.CategoryID = $categoryTableName.CategoryID '
+          'WHERE Month = $month AND Year = $year'
+      );
     }
     else if (sortBy == Constants.sortYear) {
-      result = await db.rawQuery('SELECT * FROM $recordTableName WHERE Year = $year');
+      result = await db.rawQuery('SELECT * FROM $recordTableName '
+          'INNER JOIN $categoryTableName ON $recordTableName.CategoryID = $categoryTableName.CategoryID '
+          'WHERE Year = $year'
+      );
     }
 
     //final result = await db.query(recordTableName);
@@ -160,23 +169,23 @@ class DatabaseHelper {
   }
 
   // update record
-  Future<int> updateRecord(int id, String name, int categoryID, double amount, int day, int month, int year) async {
+  Future<int> updateRecord(int recordID, String name, int categoryID, double amount, int day, int month, int year) async {
     final db = await instance.database;
 
     return db.rawUpdate(
         'UPDATE $recordTableName SET Name = "$name", CategoryID = $categoryID, Amount = $amount, Day = $day, Month = $month, Year = $year '
-            'WHERE _id = $id'
+            'WHERE RecordID = $recordID'
     );
 
   }
 
-  Future<int> deleteRecord(int id) async {
+  Future<int> deleteRecord(int recordID) async {
     final db = await instance.database;
 
     return await db.delete(
       recordTableName,
-      where: '${DB_RecordField.id} = ?',
-      whereArgs: [id],
+      where: '${DB_RecordField.RecordID} = ?',
+      whereArgs: [recordID],
     );
   }
 
@@ -190,9 +199,9 @@ class DatabaseHelper {
   Future<CategoryModel> createCategory(CategoryModel categoryModel) async {
     final db = await instance.database;
 
-    final id = await db.insert(categoryTableName, categoryModel.toJson());
+    final categoryID = await db.insert(categoryTableName, categoryModel.toJson());
 
-    return categoryModel.copy(id: id);
+    return categoryModel.copy(CategoryID: categoryID);
   }
 
   Future<List<CategoryModel>> readAllCategory() async {
@@ -227,22 +236,22 @@ class DatabaseHelper {
   }*/
 
 
-  Future<int> updateCategory(int id, String categoryName, String categoryIcon, String categoryType) async {
+  Future<int> updateCategory(int categoryID, String categoryName, String categoryIcon, String categoryType) async {
     final db = await instance.database;
 
     return db.rawUpdate(
         'UPDATE $categoryTableName SET CategoryName = "$categoryName", CategoryIcon = "$categoryIcon", CategoryType = "$categoryType" '
-            'WHERE _id = $id'
+            'WHERE CategoryID = $categoryID'
     );
   }
 
-  Future<int> deleteCategory(int id, String categoryName, String categoryType) async {
+  Future<int> deleteCategory(int categoryID, String categoryName, String categoryType) async {
     final db = await instance.database;
 
     return await db.delete(
       categoryTableName,
-      where: '${DB_CategoryField.id} = ? AND ${DB_CategoryField.CategoryName} = ? AND ${DB_CategoryField.CatergoryType} = ? ' ,
-      whereArgs: [id, categoryName, categoryType],
+      where: '${DB_CategoryField.CategoryID} = ? AND ${DB_CategoryField.CategoryName} = ? AND ${DB_CategoryField.CatergoryType} = ? ' ,
+      whereArgs: [categoryID, categoryName, categoryType],
     );
   }
 

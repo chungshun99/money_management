@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
 
     for(var records in testRecords) {
       RecordModel recordRead = RecordModel(
-          id: records.id,
+          recordID: records.recordID,
           name: records.name,
           categoryID: records.categoryID,
           amount: records.amount,
@@ -84,7 +84,8 @@ class _HomePageState extends State<HomePage> {
           numberOfRecords: records.numberOfRecords,
           day: records.day,
           month: records.month,
-          year: records.year
+          year: records.year,
+          totalBalance: records.totalBalance
       );
 
       testRecordsList.add(recordRead);
@@ -100,7 +101,7 @@ class _HomePageState extends State<HomePage> {
 
     for(var records in testRecords) {
       RecordModel recordRead = RecordModel(
-          id: records.id,
+          recordID: records.recordID,
           name: records.name,
           categoryID: records.categoryID,
           categoryName: records.categoryName,
@@ -335,18 +336,38 @@ class _HomePageState extends State<HomePage> {
         int day = expense.day;
         int month = expense.month;
         int year = expense.year;
+        String totalBalance = expense.totalBalance.toString();
         //var recordsList = loadRecords3();
 
         //return createListView(context, expense);
 
-        return Container(
-          height: 30,
-          //color: Colors.green,
-          //Future Builder
-          child: _futureBuilder2(day, month, year),
+        return Column(
+          children: [
+            //Future Builder
+            Expanded(child: _futureBuilder2(day, month, year),),
+            Container(
+              color: Colors.amber[600],
+              //margin: EdgeInsets.only(top: 10),
+              padding: const EdgeInsets.all(14.0),
+              /*decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black45)
+              ),*/
+              child: Text(
+                  "Balance : $totalBalance",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)
+              ),
+            )
+
+          ],
         );
 
+        /*return Container(
+          height: 30,
+          //color: Colors.green,
 
+          //Future Builder
+          child: _futureBuilder2(day, month, year),
+        );*/
       },
     );
   }
@@ -524,34 +545,104 @@ class _HomePageState extends State<HomePage> {
     List<RecordModel> values = snapshot.data;
 
     //to get all the categories in the record
-    List<String> categories = values.map((records) => records.categoryName ?? "").toList();
+    //List<String> categories = values.map((records) => records.categoryName ?? "").toList()
 
     //to remove duplicated values
-    categories = categories.toSet().toList();
+    //categories = categories.toSet().toList();
+
+    var categories = Map.fromIterable(values, key: (e) => e.categoryName, value: (e) => e.categoryIcon);
+    print("MAP 1:::::");
+
+    print(categories.length);
+
+    /*return Column(
+      children: [
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: categories.length,
+          itemBuilder: (BuildContext context, int index) {
+            //var expense = expenses[index];
+            //String category = categories[index];
+
+            //access key by index
+            String category = categories.keys.elementAt(index);
+
+            //access key values: mapVariable[key]
+            var categoryIconData = Constants.icons[categories[category]];
+
+            return ExpansionTile(
+              title: Row(
+                children: [
+                  Icon(categoryIconData, size: 30,),
+                  SizedBox(width: 20,),
+                  Text(category, style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),),
+                ],
+              ),
+
+              children: [
+                createListView(context, snapshot, category)
+              ],
+            );
+          },
+        )
+      ],
+    );*/
 
     return ListView.builder(
       itemCount: categories.length,
       itemBuilder: (BuildContext context, int index) {
         //var expense = expenses[index];
-        String category = categories[index];
+        //String category = categories[index];
+
+        //access key by index
+        String category = categories.keys.elementAt(index);
+
+        //access key values: mapVariable[key]
+        var categoryIconData = Constants.icons[categories[category]];
 
         return ExpansionTile(
-          title: Text(category, style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),),
+          title: Row(
+            children: [
+              Icon(categoryIconData, size: 30,),
+              SizedBox(width: 20,),
+              Text(category, style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),),
+            ],
+          ),
+
           children: [
-              createListView(context, snapshot, category)
-            /*SizedBox(
-              height: 400,
-              child: createListView(context, snapshot),
-            )*/
+            createListView(context, snapshot, category)
           ],
-          /*children: <Widget>[
-            Column(
-              children: createListView(context, snapshot),
-            ),
-          ],*/
         );
       },
     );
+
+    /*return ListView.builder(
+      itemCount: categories.length,
+      itemBuilder: (BuildContext context, int index) {
+        //var expense = expenses[index];
+        //String category = categories[index];
+
+        //access key by index
+        String category = categories.keys.elementAt(index);
+
+        //access key values: mapVariable[key]
+        var categoryIconData = Constants.icons[categories[category]];
+
+        return ExpansionTile(
+          title: Row(
+            children: [
+              Icon(categoryIconData, size: 30,),
+              SizedBox(width: 20,),
+              Text(category, style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),),
+            ],
+          ),
+
+          children: [
+              createListView(context, snapshot, category)
+          ],
+        );
+      },
+    );*/
   }
 
 
@@ -565,10 +656,15 @@ class _HomePageState extends State<HomePage> {
       itemBuilder: (BuildContext context, int index) {
         //var expense = expenses[index];
         var expense = snapshot.data[index];
-        int id = expense.id!;
+        int recordID = expense.recordID!;
         String? expenseName = expense.name;
         String category = expense.categoryName;
+        String recordType = expense.type;
         double amount = expense.amount;
+        String amountString = amount.toString();
+
+        String day = expense.day.toString();
+        String? month = Constants.monthsInYear[expense.month];
 
         if (category == categoryHeader) {
           return Container(
@@ -576,21 +672,40 @@ class _HomePageState extends State<HomePage> {
                   mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
                     Align(
-                      alignment: Alignment.centerLeft,
+                      alignment: Alignment.centerLeft,  
                       child:
                       Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
+                            const SizedBox(width: 16,),
+                            (recordType == Constants.expenseType)
+                            ?
+                            Icon(Icons.circle, size: 10, color: Colors.red)
+                            :
+                            Icon(Icons.circle, size: 10, color: Colors.green),
                             Expanded(
                                 flex: 1,
                                 child: Padding(
-                                  padding: const EdgeInsets.only(left:6, right: 6, top:6, bottom: 6),
+                                  padding: const EdgeInsets.only(left:8, right: 6, top:6, bottom: 6),
                                   child:Text(expenseName!,
                                       textAlign: TextAlign.start,
-                                      style: const TextStyle(color: Colors.black, fontSize: 15)),
-                                )),
+                                      style: const TextStyle(color: Colors.black, fontSize: 14)),
+                                )
+                            ),
+                            Expanded(
+                                flex: 2,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left:6, right: 6, top:6, bottom: 6),
+                                  child:Text(amountString,
+                                      textAlign: TextAlign.start,
+                                      style: const TextStyle(color: Colors.black, fontSize: 14)),
+                                )
+                            ),
+                            Text("$day ${month!}"),
                             // edit button
                             IconButton(
+                              //padding: EdgeInsets.only(left: 0, right: 0),
+                              //constraints: const BoxConstraints(minWidth: 45, maxWidth: 45),
                               icon:  Icon(Icons.edit_outlined),
                               iconSize: 20,
                               color: Colors.blue,
@@ -601,12 +716,15 @@ class _HomePageState extends State<HomePage> {
                             ),
                             // delete button
                             IconButton(
+                              //padding: EdgeInsets.zero,
+                              //padding: EdgeInsets.only(left: 0, right: 0),
+                              constraints: const BoxConstraints(minWidth: 30, maxWidth: 30),
                               icon:  Icon(Icons.delete_outline),
                               iconSize: 20,
                               color: Colors.red,
                               onPressed: () {
                                 // delete item
-                                deleteRecord(id);
+                                deleteRecord(recordID);
                               },
                             ),
                           ]),

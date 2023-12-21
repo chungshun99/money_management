@@ -44,7 +44,7 @@ class DB_Record {
 
     await db.execute('''
     CREATE TABLE $recordTableName (
-    ${DB_RecordField.id} $idType,
+    ${DB_RecordField.RecordID} $idType,
     ${DB_RecordField.Name} $textNullType,
     ${DB_RecordField.CategoryID} $textNotNullType,
     ${DB_RecordField.Amount} $realType,
@@ -55,33 +55,13 @@ class DB_Record {
     )
     ''');
 
-    await db.execute('''
-    CREATE TABLE $categoryTableName (
-    ${DB_CategoryField.id} $idType,
-    ${DB_CategoryField.CategoryName} $textNotNullType,
-    ${DB_CategoryField.CategoryIcon} $textNotNullType,
-    ${DB_CategoryField.CatergoryType} $textNotNullType
-    )
-    ''');
-
-    await _createDefaultCategories(db);
-
-  }
-
-  Future<void> _createDefaultCategories(Database database) async {
-    List<CategoryModel> defaultCategories = Constants.defaultCategories;
-
-    for(var category in defaultCategories) {
-      await database.insert('Category', category.toJson());
-    }
-
   }
 
   Future<RecordModel> create(RecordModel recordModel) async {
     final db = await instance.database;
 
-    final id = await db.insert(recordTableName, recordModel.toJson());
-    return recordModel.copy(id: id);
+    final recordID = await db.insert(recordTableName, recordModel.toJson());
+    return recordModel.copy(RecordID: recordID);
 
   }
 
@@ -164,7 +144,7 @@ class DB_Record {
 
     return await db.delete(
       recordTableName,
-      where: '${DB_RecordField.id} = ?',
+      where: '${DB_RecordField.RecordID} = ?',
       whereArgs: [id],
     );
   }

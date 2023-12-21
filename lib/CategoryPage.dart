@@ -89,7 +89,7 @@ class _CategoryPageState extends State<CategoryPage> {
 
   Widget _listViewItemBuilder(BuildContext context, int index){
     var category = categoryList[index];
-    int id = category.id!;
+    int categoryID = category.categoryID!;
     String categoryName = category.categoryName;
     String categoryType = category.categoryType;
     String categoryIcon = category.categoryIcon;
@@ -141,7 +141,7 @@ class _CategoryPageState extends State<CategoryPage> {
                             color: Colors.blueAccent,
                             onPressed: () {
                               //update category
-                              updateCategoryPage(id, categoryName, categoryType, categoryIcon);
+                              updateCategoryPage(categoryID, categoryName, categoryType, categoryIcon);
                               //updateCategory(id, categoryName, categoryType);
                             },
                           ),
@@ -152,7 +152,7 @@ class _CategoryPageState extends State<CategoryPage> {
                             color: Colors.red,
                             onPressed: () {
                               //delete category
-                              deleteCategory(id, categoryName, categoryType);
+                              deleteCategory(categoryID, categoryName, categoryType);
                             },
                           ),
                         ]),
@@ -266,7 +266,7 @@ class _CategoryPageState extends State<CategoryPage> {
     else {
       for (var category in categoryListTemp) {
         CategoryModel categoryModel = new CategoryModel(
-            id: category.id,
+            categoryID: category.categoryID,
             categoryName: category.categoryName,
             categoryType: category.categoryType,
             categoryIcon: category.categoryIcon
@@ -312,9 +312,9 @@ class _CategoryPageState extends State<CategoryPage> {
     });
   }
 
-  updateCategoryPage(int id, String categoryName, String categoryType, String categoryIcon) {
+  updateCategoryPage(int categoryID, String categoryName, String categoryType, String categoryIcon) {
     CategoryModel categoryModel = CategoryModel(
-        id: id,
+        categoryID: categoryID,
         categoryName: categoryName,
         categoryIcon: categoryIcon,
         categoryType: categoryType
@@ -336,9 +336,9 @@ class _CategoryPageState extends State<CategoryPage> {
     });
   }
 
-  Future<void> deleteCategory(int id, String categoryName, String categoryType) async {
+  Future<void> deleteCategory(int categoryID, String categoryName, String categoryType) async {
     try {
-      await DatabaseHelper.instance.deleteCategory(id, categoryName, categoryType);
+      await DatabaseHelper.instance.deleteCategory(categoryID, categoryName, categoryType);
       await loadCategory();
 
     }

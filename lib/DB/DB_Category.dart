@@ -114,7 +114,7 @@ class DB_Category {
 
     await db.execute('''
     CREATE TABLE $categoryTableName (
-    ${DB_CategoryField.id} $idType,
+    ${DB_CategoryField.CategoryID} $idType,
     ${DB_CategoryField.CategoryName} $textNotNullType,
     ${DB_CategoryField.CategoryIcon} $textNotNullType,
     ${DB_CategoryField.CatergoryType} $textNotNullType
@@ -132,9 +132,9 @@ class DB_Category {
   Future<CategoryModel> create(CategoryModel categoryModel) async {
     final db = await instance.database;
 
-    final id = await db.insert(categoryTableName, categoryModel.toJson());
+    final categoryID = await db.insert(categoryTableName, categoryModel.toJson());
 
-    return categoryModel.copy(id: id);
+    return categoryModel.copy(CategoryID: categoryID);
   }
 
   Future<List<CategoryModel>> readAllData() async {
@@ -169,22 +169,22 @@ class DB_Category {
   }*/
 
 
-  Future<int> updateCategory(int id, String categoryName, String categoryIcon, String categoryType) async {
+  Future<int> updateCategory(int categoryID, String categoryName, String categoryIcon, String categoryType) async {
     final db = await instance.database;
 
     return db.rawUpdate(
         'UPDATE $categoryTableName SET CategoryName = "$categoryName", CategoryIcon = "$categoryIcon", CategoryType = "$categoryType" '
-            'WHERE _id = $id'
+            'WHERE CategoryID = $categoryID'
     );
   }
 
-  Future<int> delete(int id, String categoryName, String categoryType) async {
+  Future<int> delete(int categoryID, String categoryName, String categoryType) async {
     final db = await instance.database;
 
     return await db.delete(
       categoryTableName,
-      where: '${DB_CategoryField.id} = ? AND ${DB_CategoryField.CategoryName} = ? AND ${DB_CategoryField.CatergoryType} = ? ' ,
-      whereArgs: [id, categoryName, categoryType],
+      where: '${DB_CategoryField.CategoryID} = ? AND ${DB_CategoryField.CategoryName} = ? AND ${DB_CategoryField.CatergoryType} = ? ' ,
+      whereArgs: [categoryID, categoryName, categoryType],
     );
   }
 

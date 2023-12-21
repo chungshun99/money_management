@@ -205,13 +205,13 @@ class _AddCategoryFormState extends State<AddCategoryForm> {
   }
 
   Future updateCategory() async {
-    int? id = widget.categoryModel!.id;
+    int? categoryID = widget.categoryModel!.categoryID;
     String categoryName = categoryNameController.text;
     String categoryType = _selectedCategoryType;
     String categoryIcon = _selectedIcon;
 
     try {
-      await DatabaseHelper.instance.updateCategory(id!, categoryName, categoryIcon, categoryType);
+      await DatabaseHelper.instance.updateCategory(categoryID!, categoryName, categoryIcon, categoryType);
       Navigator.pop(context);
     }
     catch(e) {

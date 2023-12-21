@@ -16,6 +16,7 @@ class DB_RecordField {
   static final String Type = "Type";
 
   static final String NumberOfRecords = "NumberOfRecords";
+  static final String TotalBalance = "TotalBalance";
 }
 
 class RecordModel {
@@ -92,7 +93,7 @@ class RecordModel {
 
 
   static RecordModel fromJson(Map<String, Object?> json) => RecordModel(
-    id: json[DB_RecordField.id] as int?,
+    recordID: json[DB_RecordField.RecordID] as int?,
     name: json[DB_RecordField.Name] as String?,
     categoryID: json[DB_RecordField.CategoryID] as int,
     amount: json[DB_RecordField.Amount] as double,
@@ -106,7 +107,7 @@ class RecordModel {
   );
 
   Map<String, Object?> toJson() => {
-    DB_RecordField.id : id,
+    DB_RecordField.RecordID : recordID,
     DB_RecordField.Name : name,
     DB_RecordField.CategoryID: categoryID,
     DB_RecordField.Amount : amount,
@@ -124,12 +125,14 @@ class RecordFilterModel {
   final int day;
   final int month;
   final int year;
+  final double totalBalance;
 
   RecordFilterModel({
     this.numberOfRecords,
     required this.day,
     required this.month,
-    required this.year
+    required this.year,
+    required this.totalBalance
   });
 
 
@@ -138,6 +141,7 @@ class RecordFilterModel {
     day: json[DB_RecordField.Day] as int,
     month: json[DB_RecordField.Month] as int,
     year: json[DB_RecordField.Year] as int,
+    totalBalance: json[DB_RecordField.TotalBalance] as double,
   );
 
 

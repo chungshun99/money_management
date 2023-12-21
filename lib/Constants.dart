@@ -16,6 +16,22 @@ class Constants {
   static const String sortYear = "Year";
 
 
+  //Months
+  static const Map<int, String> monthsInYear = {
+    1: "Jan",
+    2: "Feb",
+    3: "Mar",
+    4: "Apr",
+    5: "May",
+    6: "Jun",
+    7: "Jul",
+    8: "Aug",
+    9: "Sep",
+    10: "Oct",
+    11: "Nov",
+    12: "Dec",
+  };
+
   //List of Icons
   static const Map<String, IconData>  icons = {
     "emergency_outlined": Icons.emergency_outlined,
