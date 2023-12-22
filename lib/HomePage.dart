@@ -220,7 +220,7 @@ class _HomePageState extends State<HomePage> {
             flex: 1,
               child: Container(
                 height: 200,
-                color: Colors.yellow,
+                //color: Colors.yellow,
                 padding: EdgeInsets.all(20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -335,8 +335,26 @@ class _HomePageState extends State<HomePage> {
         var expense = snapshot.data[index];
         int day = expense.day;
         int month = expense.month;
+        String? monthInYear = Constants.monthsInYear[month];
         int year = expense.year;
-        String totalBalance = expense.totalBalance.toString();
+
+        double balance = expense.totalBalance;
+        //check if the balance is negative, to differentiate the colour to be used
+        bool isNegative = balance.isNegative;
+        //abs() - to remove the negative value
+        String totalBalance = balance.abs().toString();
+
+        String date = "";
+        if (sortBy == Constants.sortDay) {
+          date = '$day $monthInYear $year';
+        }
+        else if (sortBy == Constants.sortMonth) {
+          date = '$monthInYear $year';
+        }
+        else if (sortBy == Constants.sortYear) {
+          date = year.toString();
+        }
+
         //var recordsList = loadRecords3();
 
         //return createListView(context, expense);
@@ -344,20 +362,21 @@ class _HomePageState extends State<HomePage> {
         return Column(
           children: [
             //Future Builder
+            Center(
+              heightFactor: 2,
+              child: Text(date, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),),
+            ),
             Expanded(child: _futureBuilder2(day, month, year),),
-            Container(
-              color: Colors.amber[600],
-              //margin: EdgeInsets.only(top: 10),
-              padding: const EdgeInsets.all(14.0),
-              /*decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black45)
-              ),*/
-              child: Text(
-                  "Balance : $totalBalance",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)
-              ),
-            )
-
+            Card(
+              elevation: 3,
+              color: isNegative ? Colors.red[400] : Colors.lightGreenAccent[400],
+              child: Padding(
+                padding: EdgeInsets.all(14.0),
+                child: Text("Balance : $totalBalance",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)
+                ),
+              )
+            ),
           ],
         );
 
